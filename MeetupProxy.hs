@@ -11,11 +11,13 @@ import Network.Wai.Handler.Warp
 import qualified Data.ByteString.UTF8 as BU
 
 
+main :: IO ()
 main = do
     let port = 3000
     putStrLn $ "Listening on port " ++ show port
     run port app
 
+app :: Network.Wai.Request -> (Network.Wai.Response -> IO a) -> IO a
 app req respond = do
     response <- case pathInfo req of
         ["events"] -> meetup req
@@ -23,6 +25,7 @@ app req respond = do
         _ -> return $ notFoundPage
     respond response
 
+meetup :: Network.Wai.Request -> IO Network.Wai.Response
 meetup req =
     let
         status = case getStatusFromQuery $ queryString req of
@@ -43,11 +46,14 @@ getStatusFromQuery queryString =
         (_, x):_ -> x
 
 okHealthResult = (HealthResponse { status = Ok, problems = [] })
+
+health :: Network.Wai.Response
 health = responseLBS
     status200
     [(hContentType, "application/json")]
     (encode okHealthResult)
 
+notFoundPage :: Network.Wai.Response
 notFoundPage = responseLBS status404 [(hContentType, "text/html")] "<h1>Page not found</p>"
 
 data HealthStatus = Ok | Warning | Critical
