@@ -1,11 +1,10 @@
 {-# LANGUAGE OverloadedStrings, DuplicateRecordFields, DeriveGeneric #-}
 
-import Blaze.ByteString.Builder (copyByteString)
 import Data.Aeson
 import Data.Text (Text)
 import GHC.Generics
 import Network.HTTP.Simple
-import Network.HTTP.Types (status200)
+import Network.HTTP.Types (status200, status404)
 import Network.HTTP.Types.Header (hContentType)
 import Network.Wai
 import Network.Wai.Handler.Warp
@@ -21,7 +20,7 @@ app req respond = do
     response <- case pathInfo req of
         ["events"] -> meetup req
         ["health"] -> return health
-        x -> return $ index x
+        _ -> return $ notFoundPage
     respond response
 
 meetup req =
@@ -43,15 +42,13 @@ getStatusFromQuery queryString =
         [] -> Nothing
         (_, x):_ -> x
 
-index x = responseBuilder status200 [(hContentType, "text/html")] $ mconcat $ map copyByteString
-    [ "<p>Hello from ", BU.fromString $ show x, "!</p>"
-    , "<p><a href='/yay'>yay</a></p>\n" ]
-
 okHealthResult = (HealthResponse { status = Ok, problems = [] })
 health = responseLBS
     status200
     [(hContentType, "application/json")]
     (encode okHealthResult)
+
+notFoundPage = responseLBS status404 [(hContentType, "text/html")] "<h1>Page not found</p>"
 
 data HealthStatus = Ok | Warning | Critical
 
