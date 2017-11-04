@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedStrings, DuplicateRecordFields, DeriveGeneric #-}
+module Main where
 
 import Data.Aeson
 import Data.Text (Text)
