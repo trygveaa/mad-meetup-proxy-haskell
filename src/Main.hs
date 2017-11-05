@@ -5,10 +5,11 @@ import Data.Aeson
 import Data.Text (Text)
 import GHC.Generics
 import Network.HTTP.Simple
-import Network.HTTP.Types (status200, status404)
-import Network.HTTP.Types.Header (hContentType)
+import Network.HTTP.Types (status200, status302, status404)
+import Network.HTTP.Types.Header (hContentType, hLocation)
 import Network.Wai
 import Network.Wai.Handler.Warp
+import qualified Data.ByteString as B
 import qualified Data.ByteString.UTF8 as BU
 
 
@@ -21,6 +22,7 @@ main = do
 app :: Network.Wai.Request -> (Network.Wai.Response -> IO a) -> IO a
 app req respond = do
     response <- case path of
+        [] -> return $ redirectRelative req "/events/"
         ["events"] -> meetup req
         ["health"] -> return health
         _ -> return $ notFoundPage
@@ -29,6 +31,10 @@ app req respond = do
         path = case pathInfo req of
             (reverse -> "":x) -> x
             x -> x
+
+redirectRelative :: Network.Wai.Request -> BU.ByteString -> Network.Wai.Response
+redirectRelative req path = responseLBS status302 [(hLocation, location)] ""
+    where location = B.concat [path, rawQueryString req]
 
 meetup :: Network.Wai.Request -> IO Network.Wai.Response
 meetup req =
