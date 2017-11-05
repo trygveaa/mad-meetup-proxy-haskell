@@ -29,10 +29,10 @@ app req respond = do
 meetup :: Network.Wai.Request -> IO Network.Wai.Response
 meetup req =
     let
-        status = case getStatusFromQuery $ queryString req of
-            Just x -> "status=" ++ BU.toString x
+        statusQuery = case getStatusFromQuery $ queryString req of
+            Just x -> "statusQuery=" ++ BU.toString x
             Nothing -> ""
-        url = "http://api.meetup.com/Fagkvelder-Itera/events?" ++ status
+        url = "http://api.meetup.com/Fagkvelder-Itera/events?" ++ statusQuery
     in do
         response <- httpLBS $ parseRequest_ url
         return $ responseLBS
@@ -41,11 +41,12 @@ meetup req =
             (getResponseBody response)
 
 getStatusFromQuery :: [(BU.ByteString, Maybe BU.ByteString)] -> Maybe BU.ByteString
-getStatusFromQuery queryString =
-    case filter (\query -> fst query == "status") queryString of
+getStatusFromQuery queryList =
+    case filter (\query -> fst query == "status") queryList of
         [] -> Nothing
         (_, x):_ -> x
 
+okHealthResult :: HealthResponse
 okHealthResult = (HealthResponse { status = Ok, problems = [] })
 
 health :: Network.Wai.Response
