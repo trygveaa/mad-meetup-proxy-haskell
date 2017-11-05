@@ -2,6 +2,7 @@
 module Main where
 
 import Data.Aeson
+import Data.Maybe (fromMaybe)
 import Data.Text (Text)
 import GHC.Generics
 import Network.HTTP.Simple
@@ -9,13 +10,20 @@ import Network.HTTP.Types (status200, status302, status404)
 import Network.HTTP.Types.Header (hContentType, hLocation)
 import Network.Wai
 import Network.Wai.Handler.Warp
+import System.Environment (lookupEnv)
+import Text.Read (readMaybe)
 import qualified Data.ByteString as B
 import qualified Data.ByteString.UTF8 as BU
 
 
 main :: IO ()
 main = do
-    let port = 3000
+    let defaultPort = "3000"
+    portEnv <- lookupEnv "PORT"
+    let port = case readMaybe $ fromMaybe defaultPort portEnv of
+            Just x -> x
+            Nothing -> error "PORT must be a number"
+
     putStrLn $ "Listening on port " ++ show port
     run port app
 

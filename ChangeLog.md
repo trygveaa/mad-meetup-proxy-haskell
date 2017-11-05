@@ -5,6 +5,7 @@
 * Fix markup for 404 page
 * Allow trailing slash in paths
 * Redirect from / to /events/
+* Allow port to be set with the environment variable PORT
 
 ## 1.0.0  -- 2017-11-06
 
