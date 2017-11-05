@@ -42,7 +42,7 @@ meetup req =
 
 getStatusFromQuery :: [(BU.ByteString, Maybe BU.ByteString)] -> Maybe BU.ByteString
 getStatusFromQuery queryList =
-    case filter (\query -> fst query == "status") queryList of
+    case filter ((== "status") . fst) queryList of
         [] -> Nothing
         (_, x):_ -> x
 
