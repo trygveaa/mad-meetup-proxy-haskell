@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings, DuplicateRecordFields, DeriveGeneric #-}
+{-# LANGUAGE DeriveGeneric, DuplicateRecordFields, OverloadedStrings, ViewPatterns #-}
 module Main where
 
 import Data.Aeson
@@ -20,11 +20,15 @@ main = do
 
 app :: Network.Wai.Request -> (Network.Wai.Response -> IO a) -> IO a
 app req respond = do
-    response <- case pathInfo req of
+    response <- case path of
         ["events"] -> meetup req
         ["health"] -> return health
         _ -> return $ notFoundPage
     respond response
+    where
+        path = case pathInfo req of
+            (reverse -> "":x) -> x
+            x -> x
 
 meetup :: Network.Wai.Request -> IO Network.Wai.Response
 meetup req =

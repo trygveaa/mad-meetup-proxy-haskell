@@ -3,6 +3,7 @@
 ## NEXT   -- UNRELEASED
 
 * Fix markup for 404 page
+* Allow trailing slash in paths
 
 ## 1.0.0  -- 2017-11-06
 
