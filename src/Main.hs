@@ -44,7 +44,7 @@ getStatusFromQuery :: [(BU.ByteString, Maybe BU.ByteString)] -> Maybe BU.ByteStr
 getStatusFromQuery queryList =
     case filter ((== "status") . fst) queryList of
         [] -> Nothing
-        (_, x):_ -> x
+        x:_ -> snd x
 
 okHealthResult :: HealthResponse
 okHealthResult = (HealthResponse { status = Ok, problems = [] })
