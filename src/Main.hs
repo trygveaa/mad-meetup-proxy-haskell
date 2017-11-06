@@ -30,9 +30,9 @@ meetup :: Network.Wai.Request -> IO Network.Wai.Response
 meetup req =
     let
         statusQuery = case getStatusFromQuery $ queryString req of
-            Just x -> "statusQuery=" ++ BU.toString x
+            Just x -> "?status=" ++ BU.toString x
             Nothing -> ""
-        url = "http://api.meetup.com/Fagkvelder-Itera/events?" ++ statusQuery
+        url = "http://api.meetup.com/Fagkvelder-Itera/events" ++ statusQuery
     in do
         response <- httpLBS $ parseRequest_ url
         return $ responseLBS
