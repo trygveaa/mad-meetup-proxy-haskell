@@ -56,7 +56,10 @@ health = responseLBS
     (encode okHealthResult)
 
 notFoundPage :: Network.Wai.Response
-notFoundPage = responseLBS status404 [(hContentType, "text/html")] "<h1>Page not found</h1>"
+notFoundPage = responseLBS
+    status404
+    [(hContentType, "text/html")]
+    "<h1>Page not found</h1>"
 
 data HealthStatus = Ok | Warning | Critical
 
