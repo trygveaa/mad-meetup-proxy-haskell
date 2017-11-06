@@ -11,6 +11,7 @@ import Network.HTTP.Types.Header (hContentType, hLocation)
 import Network.Wai
 import Network.Wai.Handler.Warp
 import System.Environment (lookupEnv)
+import Text.Printf (printf)
 import Text.Read (readMaybe)
 import qualified Data.ByteString as B
 import qualified Data.ByteString.UTF8 as BU
@@ -44,15 +45,22 @@ redirectRelative :: Network.Wai.Request -> BU.ByteString -> Network.Wai.Response
 redirectRelative req path = responseLBS status302 [(hLocation, location)] ""
     where location = B.concat [path, rawQueryString req]
 
+getMeetupGroupFromEnv :: IO String
+getMeetupGroupFromEnv = do
+    let defaultMeetupGroup = "Fagkvelder-Itera"
+    meetupGroupEnv <- lookupEnv "MEETUP_GROUP"
+    return $ fromMaybe defaultMeetupGroup meetupGroupEnv
+
 meetup :: Network.Wai.Request -> IO Network.Wai.Response
 meetup req =
     let
         statusQuery = case getStatusFromQuery $ queryString req of
             Just x -> "?status=" ++ BU.toString x
             Nothing -> ""
-        url = "http://api.meetup.com/Fagkvelder-Itera/events" ++ statusQuery
+        url = "http://api.meetup.com/%s/events" ++ statusQuery
     in do
-        response <- httpLBS $ parseRequest_ url
+        meetupGroup <- getMeetupGroupFromEnv
+        response <- httpLBS $ parseRequest_ $ printf url meetupGroup
         return $ responseLBS
             (getResponseStatus response)
             [(hContentType, head $ getResponseHeader hContentType response)]
