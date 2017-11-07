@@ -1,6 +1,6 @@
 # Revision history for meetup-proxy
 
-## NEXT   -- UNRELEASED
+## 1.1.0  -- 2017-11-07
 
 * Fix markup for 404 page
 * Allow trailing slash in paths
